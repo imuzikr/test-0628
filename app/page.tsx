@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import KeywordPanel from "@/components/keyword-panel";
 import QuestionBoard from "@/components/question-board";
-import NoticePanel from "@/components/notice-panel";
 import { getCurrentUser } from "@/lib/auth";
 import { User } from "@/lib/types";
 
@@ -34,10 +33,6 @@ export default function Home() {
         />
       </section>
 
-      {/* 3단: 공지사항 사이드바 (오른쪽) */}
-      <aside className="w-80 flex-shrink-0 glass-sidebar hidden lg:block border-l border-r-0">
-        <NoticePanel />
-      </aside>
     </main>
   );
 }
