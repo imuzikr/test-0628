@@ -3,16 +3,32 @@
 import { useEffect, useState } from "react";
 import KeywordPanel from "@/components/keyword-panel";
 import QuestionBoard from "@/components/question-board";
-import { getCurrentUser } from "@/lib/auth";
+import AuthModal from "@/components/auth-modal";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { logout } from "@/lib/auth";
 import { User } from "@/lib/types";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>("전체");
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
-    // 임시 테스트 유저 로드
-    setUser(getCurrentUser());
+    // Firebase Auth 상태 실시간 감지
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName || "이름 없음",
+          photoURL: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`,
+          email: firebaseUser.email || "",
+        });
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -22,6 +38,9 @@ export default function Home() {
         <KeywordPanel
           selectedSubject={selectedSubject}
           onSelectSubject={setSelectedSubject}
+          user={user}
+          onLoginClick={() => setIsAuthModalOpen(true)}
+          onLogout={logout}
         />
       </aside>
 
@@ -30,9 +49,15 @@ export default function Home() {
         <QuestionBoard
           user={user}
           selectedSubject={selectedSubject}
+          onLoginRequired={() => setIsAuthModalOpen(true)}
         />
       </section>
 
+      {/* 로그인/회원가입 모달 */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </main>
   );
 }

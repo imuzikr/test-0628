@@ -1,15 +1,41 @@
-import { User } from "./types";
+import { 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    signOut, 
+    updateProfile 
+} from "firebase/auth";
+import { auth } from "./firebase";
 
-/**
- * 현재 로그인된 사용자를 반환하는 헬퍼 함수입니다.
- * 개발 초기 단계에서는 테스트 유저(user_01)를 반환하도록 설정되어 있습니다.
- * 나중에 실제 Firebase Auth를 연동할 때 이 부분만 수정하면 됩니다.
- */
-export function getCurrentUser(): User {
-    return {
-        uid: "user_01",
-        displayName: "테스트학생",
-        photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=user_01",
-        email: "test@school.edu",
-    };
+// 이메일 회원가입
+export async function registerWithEmail(email: string, password: string, displayName: string) {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // 닉네임(displayName) 설정 및 기본 프로필 설정
+    await updateProfile(user, {
+        displayName: displayName,
+        photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`
+    });
+    
+    return user;
+}
+
+// 이메일 로그인
+export async function loginWithEmail(email: string, password: string) {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+}
+
+// 구글 로그인
+export async function loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    return userCredential.user;
+}
+
+// 로그아웃
+export async function logout() {
+    await signOut(auth);
 }

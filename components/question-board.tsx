@@ -13,9 +13,10 @@ import { getQuestions } from "@/lib/firestore";
 interface QuestionBoardProps {
     user: User | null;
     selectedSubject: string;
+    onLoginRequired: () => void;
 }
 
-export default function QuestionBoard({ user, selectedSubject }: QuestionBoardProps) {
+export default function QuestionBoard({ user, selectedSubject, onLoginRequired }: QuestionBoardProps) {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
@@ -48,7 +49,13 @@ export default function QuestionBoard({ user, selectedSubject }: QuestionBoardPr
                         {selectedSubject !== "전체" && <span className="text-sm font-normal text-slate-500">{filteredQuestions.length}개의 질문</span>}
                     </h2>
                     <Button
-                        onClick={() => setIsWriteModalOpen(true)}
+                        onClick={() => {
+                            if (!user) {
+                                onLoginRequired();
+                            } else {
+                                setIsWriteModalOpen(true);
+                            }
+                        }}
                         className="bg-rose-600 hover:bg-rose-500 text-white rounded-full px-5 gap-2 shadow-lg shadow-rose-900/20"
                     >
                         <Plus className="w-4 h-4" />
