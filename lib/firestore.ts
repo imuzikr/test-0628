@@ -1,79 +1,133 @@
 import { Question, Answer, Notice } from "./types";
+import { db } from "./firebase";
+import { 
+    collection, 
+    getDocs, 
+    getDoc, 
+    addDoc, 
+    doc, 
+    query, 
+    where, 
+    orderBy, 
+    serverTimestamp,
+    updateDoc,
+    increment
+} from "firebase/firestore";
 
-// --- Mock Data ---
-const MOCK_QUESTIONS: Question[] = [
-    {
-        id: "q_01",
-        authorId: "user_02",
-        authorName: "화학마스터",
-        authorPhoto: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky",
-        title: "아보가드로 수와 몰 개념이 헷갈려요",
-        content: "1몰이 탄소 12g에 들어있는 원자 수인 건 알겠는데, 기체 1몰의 부피가 22.4L가 되는 이유가 아보가드로 법칙과 어떻게 연결되는지 잘 이해가 안 갑니다. 설명 부탁드려요!",
-        subject: "화학의 첫걸음",
-        answerCount: 1,
-        createdAt: { toDate: () => new Date(Date.now() - 1000 * 60 * 60 * 2) }
-    },
-    {
-        id: "q_02",
-        authorId: "user_03",
-        authorName: "원자러버",
-        authorPhoto: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bear",
-        title: "훈트 규칙과 쌓음 원리 질문",
-        content: "붕소(B)의 전자 배치를 할 때 훈트 규칙과 쌓음 원리, 파울리 배타 원리 중에서 무엇이 먼저 고려되어야 하나요? 전자 배치 순서가 헷갈려 질문 올립니다.",
-        subject: "원자의 구조",
-        answerCount: 0,
-        createdAt: { toDate: () => new Date(Date.now() - 1000 * 60 * 60 * 5) }
-    }
-];
-
-const MOCK_NOTICES: Notice[] = [
-    {
-        id: "n_01",
-        title: "화학 Q&A 게시판 오픈!",
-        content: "고등학교 화학 I 공부 중 헷갈리거나 어려운 개념을 자유롭게 질문하고 답변을 달아주세요.",
-        pinned: true,
-        createdAt: { toDate: () => new Date() }
-    }
-];
-
-// --- Firestore CRUD (Mocked for Frontend Review) ---
+// --- Firestore CRUD (Connected with Firebase Firestore) ---
 
 export async function getQuestions(subject?: string) {
-    // 실제 DB 연결 대신 목 데이터를 반환하여 프런트엔드 먼저 확인
-    await new Promise(resolve => setTimeout(resolve, 500)); // 로딩 효과
-    if (subject && subject !== "전체") {
-        return MOCK_QUESTIONS.filter(q => q.subject === subject);
+    try {
+        const questionsCol = collection(db, "questions");
+        let q = query(questionsCol, orderBy("createdAt", "desc"));
+        if (subject && subject !== "전체") {
+            q = query(questionsCol, where("subject", "==", subject), orderBy("createdAt", "desc"));
+        }
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                // serverTimestamp가 로컬 클라이언트에서 아직 null일 경우 대비
+                createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+            };
+        }) as Question[];
+    } catch (error) {
+        console.error("질문 목록 가져오기 에러:", error);
+        return [];
     }
-    return MOCK_QUESTIONS;
 }
 
 export async function addQuestion(data: any) {
-    console.log("질문 등록 (Mock):", data);
-    return "mock_id";
+    try {
+        const questionsCol = collection(db, "questions");
+        const docRef = await addDoc(questionsCol, {
+            ...data,
+            answerCount: 0,
+            createdAt: serverTimestamp()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error("질문 등록 에러:", error);
+        throw error;
+    }
 }
 
 export async function getQuestion(id: string) {
-    return MOCK_QUESTIONS.find(q => q.id === id) || null;
+    try {
+        const docRef = doc(db, "questions", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            return {
+                id: docSnap.id,
+                ...data,
+                createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+            } as Question;
+        }
+        return null;
+    } catch (error) {
+        console.error("질문 상세 조회 에러:", error);
+        return null;
+    }
 }
 
 export async function getAnswers(questionId: string) {
-    return [
-        {
-            id: "a_01",
-            authorId: "user_01",
-            authorName: "테스트학생",
-            content: "그 부분은 정적분의 정의를 먼저 살펴보시면 이해가 빠를 거예요!",
-            helpfulCount: 2,
-            createdAt: { toDate: () => new Date() }
-        }
-    ];
+    try {
+        const answersCol = collection(db, "questions", questionId, "answers");
+        const q = query(answersCol, orderBy("createdAt", "asc"));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+            };
+        }) as Answer[];
+    } catch (error) {
+        console.error("답변 가져오기 에러:", error);
+        return [];
+    }
 }
 
 export async function addAnswer(questionId: string, data: any) {
-    console.log("답변 등록 (Mock):", data);
-    return "mock_ans_id";
+    try {
+        const answersCol = collection(db, "questions", questionId, "answers");
+        const docRef = await addDoc(answersCol, {
+            ...data,
+            createdAt: serverTimestamp()
+        });
+        
+        // 질문의 답변 수 카운트 증가
+        const questionRef = doc(db, "questions", questionId);
+        await updateDoc(questionRef, {
+            answerCount: increment(1)
+        });
+        
+        return docRef.id;
+    } catch (error) {
+        console.error("답변 등록 에러:", error);
+        throw error;
+    }
 }
 
 export async function getNotices() {
-    return MOCK_NOTICES;
+    try {
+        const noticesCol = collection(db, "notices");
+        const q = query(noticesCol, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+            };
+        }) as Notice[];
+    } catch (error) {
+        console.error("공지사항 가져오기 에러:", error);
+        return [];
+    }
 }
