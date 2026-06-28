@@ -2,7 +2,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Calculator, Atom, Languages, Globe, Hash } from "lucide-react";
+import { Flame, Atom, Link2, Activity, Hash } from "lucide-react";
 
 interface KeywordPanelProps {
     selectedSubject: string;
@@ -11,14 +11,13 @@ interface KeywordPanelProps {
 
 const subjects = [
     { name: "전체", icon: Hash, color: "text-slate-400" },
-    { name: "국어", icon: BookOpen, color: "text-rose-400" },
-    { name: "수학", icon: Calculator, color: "text-blue-400" },
-    { name: "과학", icon: Atom, color: "text-emerald-400" },
-    { name: "영어", icon: Languages, color: "text-amber-400" },
-    { name: "사회", icon: Globe, color: "text-indigo-400" },
+    { name: "화학의 첫걸음", icon: Flame, color: "text-rose-400" },
+    { name: "원자의 구조", icon: Atom, color: "text-blue-400" },
+    { name: "화학 결합과 분자의 세계", icon: Link2, color: "text-emerald-400" },
+    { name: "역동적인 반응", icon: Activity, color: "text-amber-400" },
 ];
 
-const popularTags = ["미적분", "고전시가", "뉴턴의법칙", "관계대명사", "지구과학", "경제"];
+const popularTags = ["몰개념", "전자배치", "공유결합", "오비탈", "중화반응", "산화수"];
 
 export default function KeywordPanel({ selectedSubject, onSelectSubject }: KeywordPanelProps) {
     return (

@@ -14,11 +14,10 @@ interface QuestionCardProps {
 }
 
 const subjectColors: Record<string, string> = {
-    "국어": "bg-rose-500/10 text-rose-400 border-rose-500/20",
-    "수학": "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    "과학": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    "영어": "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    "사회": "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+    "화학의 첫걸음": "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    "원자의 구조": "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    "화학 결합과 분자의 세계": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    "역동적인 반응": "bg-amber-500/10 text-amber-400 border-amber-500/20",
     "전체": "bg-slate-500/10 text-slate-400 border-slate-500/20",
 };
 

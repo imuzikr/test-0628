@@ -5,22 +5,22 @@ const MOCK_QUESTIONS: Question[] = [
     {
         id: "q_01",
         authorId: "user_02",
-        authorName: "공부왕",
+        authorName: "화학마스터",
         authorPhoto: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky",
-        title: "미적분학 기본 정리 질문입니다!",
-        content: "이 부분 증명이 잘 이해가 안 가요. 미분계수의 정의를 사용해서 설명해 주실 분 계신가요?",
-        subject: "수학",
+        title: "아보가드로 수와 몰 개념이 헷갈려요",
+        content: "1몰이 탄소 12g에 들어있는 원자 수인 건 알겠는데, 기체 1몰의 부피가 22.4L가 되는 이유가 아보가드로 법칙과 어떻게 연결되는지 잘 이해가 안 갑니다. 설명 부탁드려요!",
+        subject: "화학의 첫걸음",
         answerCount: 1,
         createdAt: { toDate: () => new Date(Date.now() - 1000 * 60 * 60 * 2) }
     },
     {
         id: "q_02",
         authorId: "user_03",
-        authorName: "언어의술사",
+        authorName: "원자러버",
         authorPhoto: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bear",
-        title: "고전시가 '동동'에서 화자의 정서가 어떤가요?",
-        content: "각 월마다 정서가 조금씩 변하는 것 같은데 핵심 키워드가 궁금합니다.",
-        subject: "국어",
+        title: "훈트 규칙과 쌓음 원리 질문",
+        content: "붕소(B)의 전자 배치를 할 때 훈트 규칙과 쌓음 원리, 파울리 배타 원리 중에서 무엇이 먼저 고려되어야 하나요? 전자 배치 순서가 헷갈려 질문 올립니다.",
+        subject: "원자의 구조",
         answerCount: 0,
         createdAt: { toDate: () => new Date(Date.now() - 1000 * 60 * 60 * 5) }
     }
@@ -29,8 +29,8 @@ const MOCK_QUESTIONS: Question[] = [
 const MOCK_NOTICES: Notice[] = [
     {
         id: "n_01",
-        title: "1학기 기말고사 기간 안내",
-        content: "기말고사 기간에는 질문 답변이 더 활발해질 것으로 예상됩니다. 매너를 지켜주세요!",
+        title: "화학 Q&A 게시판 오픈!",
+        content: "고등학교 화학 I 공부 중 헷갈리거나 어려운 개념을 자유롭게 질문하고 답변을 달아주세요.",
         pinned: true,
         createdAt: { toDate: () => new Date() }
     }

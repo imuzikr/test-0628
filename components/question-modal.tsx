@@ -22,12 +22,12 @@ interface QuestionModalProps {
     user: User | null;
 }
 
-const subjects = ["국어", "수학", "과학", "영어", "사회"];
+const subjects = ["화학의 첫걸음", "원자의 구조", "화학 결합과 분자의 세계", "역동적인 반응"];
 
 export default function QuestionModal({ isOpen, onClose, mode, questionId, onSuccess, user }: QuestionModalProps) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [subject, setSubject] = useState("수학");
+    const [subject, setSubject] = useState("화학의 첫걸음");
     const [submitting, setSubmitting] = useState(false);
 
     const [question, setQuestion] = useState<Question | null>(null);
@@ -40,7 +40,7 @@ export default function QuestionModal({ isOpen, onClose, mode, questionId, onSuc
         } else if (isOpen && mode === "write") {
             setTitle("");
             setContent("");
-            setSubject("수학");
+            setSubject("화학의 첫걸음");
         }
     }, [isOpen, mode, questionId]);
 
